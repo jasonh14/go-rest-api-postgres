@@ -28,7 +28,7 @@ func (h *handler) Order(c echo.Context) error {
 
 func (h *handler) GetOrderInfo(c echo.Context) error {
 
-	orderID := c.FormValue("order_id")
+	orderID := c.Param("order_id")
 	orderData, err := h.restoUseCase.GetOrderInfo(model.GetOrderInfoRequest{OrderID: orderID})
 
 	if err != nil {

@@ -3,12 +3,13 @@ package database
 import (
 	"app/internal/model"
 	"app/internal/model/constant"
-	"fmt"
 
 	"gorm.io/gorm"
 )
 
 func seedDB(db *gorm.DB) {
+	db.AutoMigrate(&model.MenuItem{}, &model.Order{}, &model.ProductOrder{})
+
 	foodMenu := []model.MenuItem{
 		{
 			Name:      "Pizza",
@@ -49,15 +50,6 @@ func seedDB(db *gorm.DB) {
 			Price:     100,
 			Type:      constant.MenuTypeDrink,
 		},
-	}
-
-	if db.Migrator().HasTable(&model.MenuItem{}) {
-		// The table exists, so don't auto-migrate
-		fmt.Println("MenuItem table already exists.")
-	} else {
-		// The table doesn't exist, so auto-migrate it
-		db.AutoMigrate(&model.MenuItem{})
-		fmt.Println("MenuItem table created.")
 	}
 
 	if err := db.First(&model.MenuItem{}).Error; err == gorm.ErrRecordNotFound {

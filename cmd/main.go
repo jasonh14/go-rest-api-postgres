@@ -4,6 +4,7 @@ import (
 	"app/internal/database"
 	"app/internal/delivery/rest"
 	mRepo "app/internal/repository/menu"
+	oRepo "app/internal/repository/order"
 	rUseCase "app/internal/usecase/resto"
 
 	"github.com/labstack/echo/v4"
@@ -20,8 +21,9 @@ func main() {
 	db := database.GetDB(dbAddress)
 
 	menuRepo := mRepo.GetRepository(db)
+	orderRepo := oRepo.GetRepository(db)
 
-	restoUsecase := rUseCase.GetuseCase(menuRepo)
+	restoUsecase := rUseCase.GetuseCase(menuRepo, orderRepo)
 
 	h := rest.NewHandler(restoUsecase)
 

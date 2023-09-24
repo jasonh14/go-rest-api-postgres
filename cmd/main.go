@@ -5,6 +5,7 @@ import (
 	"app/internal/delivery/rest"
 	mRepo "app/internal/repository/menu"
 	oRepo "app/internal/repository/order"
+	uRepo "app/internal/repository/user"
 	rUseCase "app/internal/usecase/resto"
 
 	"github.com/labstack/echo/v4"
@@ -19,13 +20,21 @@ func main() {
 	e := echo.New()
 
 	db := database.GetDB(dbAddress)
+	secret := "00112233445566778899AABBCCDDEEFF"
 
 	menuRepo := mRepo.GetRepository(db)
 	orderRepo := oRepo.GetRepository(db)
+	userRepo, err := uRepo.GetRepository(db, secret, 64*1024, 4, 32, 1)
 
-	restoUsecase := rUseCase.GetuseCase(menuRepo, orderRepo)
+	if err != nil {
+		panic(err)
+	}
+
+	restoUsecase := rUseCase.GetuseCase(menuRepo, orderRepo, userRepo)
 
 	h := rest.NewHandler(restoUsecase)
+
+	rest.LoadMiddlewares(e)
 
 	rest.LoadRouters(e, h)
 

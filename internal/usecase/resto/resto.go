@@ -5,6 +5,8 @@ import (
 	"app/internal/model/constant"
 	"app/internal/repository/menu"
 	"app/internal/repository/order"
+	"app/internal/repository/user"
+	"errors"
 
 	"github.com/google/uuid"
 )
@@ -12,12 +14,14 @@ import (
 type restoUseCase struct {
 	menuRepo  menu.Repository
 	orderRepo order.Repository
+	userRepo  user.Repository
 }
 
-func GetuseCase(menuRepo menu.Repository, orderRepo order.Repository) Usecase {
+func GetuseCase(menuRepo menu.Repository, orderRepo order.Repository, userRepo user.Repository) Usecase {
 	return &restoUseCase{
 		menuRepo:  menuRepo,
 		orderRepo: orderRepo,
+		userRepo:  userRepo,
 	}
 }
 
@@ -68,4 +72,36 @@ func (r *restoUseCase) GetOrderInfo(request model.GetOrderInfoRequest) (model.Or
 	}
 
 	return orderData, nil
+}
+
+func (r *restoUseCase) RegisterUser(request model.RegisterRequest) (model.User, error) {
+	userRegistered, err := r.userRepo.CheckRegistered(request.Username)
+	if err != nil {
+		return model.User{}, err
+	}
+
+	if userRegistered {
+		return model.User{}, errors.New("user already registered")
+	}
+
+	userHash, err := r.userRepo.GenerateUserHash(request.Password)
+
+	if err != nil {
+		return model.User{}, err
+	}
+
+	user := model.User{
+		ID:       uuid.New().String(),
+		Username: request.Username,
+		Hash:     userHash,
+	}
+
+	userData, err := r.userRepo.RegisterUser(user)
+
+	if err != nil {
+		return model.User{}, err
+	}
+
+	return userData, nil
+
 }

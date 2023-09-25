@@ -10,3 +10,7 @@ type RegisterRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
+
+type UserSession struct {
+	JWTToken string `json:"jwt_token"`
+}

@@ -66,3 +66,29 @@ func (ur *userRepo) CheckRegistered(username string) (bool, error) {
 
 	return user.ID != "", nil
 }
+
+func (ur *userRepo) VerifyLogin(username, password string, userData model.User) (bool, error) {
+	if username != userData.Username {
+		return false, nil
+	}
+
+	verified, err := ur.comparePassword(userData.Hash, password)
+	if err != nil {
+		return false, err
+	}
+
+	return verified, nil
+
+}
+
+func (ur *userRepo) GetUserData(username string) (model.User, error) {
+	var user model.User
+	if err := ur.db.Where(model.User{Username: username}).First(&user).Error; err != nil {
+		return model.User{}, err
+	}
+	return user, nil
+}
+
+func (ur *userRepo) CreateUserSession(userID string) (model.UserSession, error) {
+	return model.UserSession{}, nil
+}

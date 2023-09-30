@@ -69,7 +69,7 @@ func (r *restoUseCase) GetOrderInfo(request model.GetOrderInfoRequest) (model.Or
 	orderData, err := r.orderRepo.GetOrderInfo(request.OrderID)
 
 	if request.UserID != orderData.UserID {
-		return model.Order{}, errors.New("unauthorized")
+		return model.Order{}, errors.New("unauthorized different user ID")
 	}
 
 	if err != nil {

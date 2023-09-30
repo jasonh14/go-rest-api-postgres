@@ -2,6 +2,7 @@ package rest
 
 import (
 	"app/src/model"
+	"app/src/model/constant"
 	"encoding/json"
 	"net/http"
 
@@ -17,6 +18,9 @@ func (h *handler) Order(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
 	}
 
+	userID := c.Request().Context().Value(constant.AuthContextKey).(string)
+	request.UserID = userID
+
 	orderData, err := h.restoUseCase.Order(request)
 
 	if err != nil {
@@ -29,7 +33,9 @@ func (h *handler) Order(c echo.Context) error {
 func (h *handler) GetOrderInfo(c echo.Context) error {
 
 	orderID := c.Param("order_id")
-	orderData, err := h.restoUseCase.GetOrderInfo(model.GetOrderInfoRequest{OrderID: orderID})
+	userID := c.Request().Context().Value(constant.AuthContextKey).(string)
+
+	orderData, err := h.restoUseCase.GetOrderInfo(model.GetOrderInfoRequest{UserID: userID, OrderID: orderID})
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})

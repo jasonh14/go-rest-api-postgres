@@ -49,6 +49,7 @@ func (r *restoUseCase) Order(request model.OrderMenuRequest) (model.Order, error
 
 	order := model.Order{
 		ID:            uuid.New().String(),
+		UserID:        request.UserID,
 		Status:        constant.OrderStatusProcessed,
 		ProductOrders: productOrderData,
 		ReferenceID:   request.ReferenceID,
@@ -66,6 +67,10 @@ func (r *restoUseCase) Order(request model.OrderMenuRequest) (model.Order, error
 
 func (r *restoUseCase) GetOrderInfo(request model.GetOrderInfoRequest) (model.Order, error) {
 	orderData, err := r.orderRepo.GetOrderInfo(request.OrderID)
+
+	if request.UserID != orderData.UserID {
+		return model.Order{}, errors.New("unauthorized")
+	}
 
 	if err != nil {
 		return orderData, err
@@ -130,4 +135,14 @@ func (r *restoUseCase) Login(request model.LoginRequest) (model.UserSession, err
 	}
 
 	return userSession, nil
+}
+
+func (r *restoUseCase) CheckSession(data model.UserSession) (userID string, err error) {
+	userID, err = r.userRepo.CheckSession(data)
+	if err != nil {
+		return "", err
+	}
+
+	return userID, nil
+
 }

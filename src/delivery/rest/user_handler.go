@@ -28,3 +28,21 @@ func (h *handler) RegisterUser(c echo.Context) error {
 	})
 
 }
+
+func (h *handler) Login(c echo.Context) error {
+	var request model.LoginRequest
+	err := json.NewDecoder(c.Request().Body).Decode(&request)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+	}
+
+	userSession, err := h.restoUseCase.Login(request)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error(), "test": "test"})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"data": userSession,
+	})
+
+}

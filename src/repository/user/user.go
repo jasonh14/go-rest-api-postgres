@@ -4,17 +4,21 @@ import (
 	"app/internal/model"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/rsa"
+	"time"
 
 	"gorm.io/gorm"
 )
 
 type userRepo struct {
-	db      *gorm.DB
-	gcm     cipher.AEAD
-	memory  uint32
-	threads uint8
-	keylen  uint32
-	time    uint32
+	db        *gorm.DB
+	gcm       cipher.AEAD
+	memory    uint32
+	threads   uint8
+	keylen    uint32
+	time      uint32
+	signKey   *rsa.PrivateKey
+	accessExp time.Duration
 }
 
 func GetRepository(
@@ -24,6 +28,8 @@ func GetRepository(
 	threads uint8,
 	keylen uint32,
 	time uint32,
+	signKey *rsa.PrivateKey,
+	accessExp time.Duration,
 ) (Repository, error) {
 	block, err := aes.NewCipher([]byte(secret))
 	if err != nil {
@@ -36,12 +42,14 @@ func GetRepository(
 	}
 
 	return &userRepo{
-		db:      db,
-		gcm:     gcm,
-		memory:  memory,
-		threads: threads,
-		keylen:  keylen,
-		time:    time,
+		db:        db,
+		gcm:       gcm,
+		memory:    memory,
+		threads:   threads,
+		keylen:    keylen,
+		time:      time,
+		signKey:   signKey,
+		accessExp: accessExp,
 	}, nil
 }
 
@@ -87,8 +95,4 @@ func (ur *userRepo) GetUserData(username string) (model.User, error) {
 		return model.User{}, err
 	}
 	return user, nil
-}
-
-func (ur *userRepo) CreateUserSession(userID string) (model.UserSession, error) {
-	return model.UserSession{}, nil
 }

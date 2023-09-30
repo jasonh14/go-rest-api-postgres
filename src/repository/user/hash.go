@@ -44,7 +44,7 @@ func (ur *userRepo) decrypt(cipherText string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	if len(decoded) != ur.gcm.NonceSize() {
+	if len(decoded) < ur.gcm.NonceSize() {
 		return nil, errors.New("invalid nonce size")
 	}
 	return ur.gcm.Open(nil, decoded[:ur.gcm.NonceSize()], decoded[ur.gcm.NonceSize():], nil)

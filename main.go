@@ -1,12 +1,12 @@
 package main
 
 import (
-	"app/internal/database"
-	"app/internal/delivery/rest"
-	mRepo "app/internal/repository/menu"
-	oRepo "app/internal/repository/order"
-	uRepo "app/internal/repository/user"
-	rUseCase "app/internal/usecase/resto"
+	"app/src/database"
+	"app/src/delivery/rest"
+	mRepo "app/src/repository/menu"
+	oRepo "app/src/repository/order"
+	uRepo "app/src/repository/user"
+	rUseCase "app/src/usecase/resto"
 	"crypto/rand"
 	"crypto/rsa"
 	"time"

@@ -1,7 +1,7 @@
 package menu
 
 import (
-	"app/internal/model"
+	"app/src/model"
 )
 
 type Repository interface {

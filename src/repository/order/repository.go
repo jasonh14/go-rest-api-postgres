@@ -1,6 +1,6 @@
 package order
 
-import "app/internal/model"
+import "app/src/model"
 
 type Repository interface {
 	CreateOrder(order model.Order) (model.Order, error)

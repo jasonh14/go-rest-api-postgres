@@ -1,8 +1,8 @@
 package database
 
 import (
-	"app/internal/model"
-	"app/internal/model/constant"
+	"app/src/model"
+	"app/src/model/constant"
 
 	"gorm.io/gorm"
 )

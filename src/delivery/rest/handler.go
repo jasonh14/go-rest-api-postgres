@@ -1,6 +1,6 @@
 package rest
 
-import "app/internal/usecase/resto"
+import "app/src/usecase/resto"
 
 type handler struct {
 	restoUseCase resto.Usecase

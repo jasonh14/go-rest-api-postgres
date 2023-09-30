@@ -1,6 +1,6 @@
 package resto
 
-import "app/internal/model"
+import "app/src/model"
 
 type Usecase interface {
 	GetMenuList(menuType string) ([]model.MenuItem, error)

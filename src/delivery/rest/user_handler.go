@@ -1,7 +1,7 @@
 package rest
 
 import (
-	"app/internal/model"
+	"app/src/model"
 	"encoding/json"
 	"net/http"
 

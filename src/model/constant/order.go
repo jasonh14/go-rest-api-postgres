@@ -1,6 +1,6 @@
 package constant
 
-import "app/internal/model"
+import "app/src/model"
 
 const (
 	OrderStatusProcessed model.OrderStatus = "processed"

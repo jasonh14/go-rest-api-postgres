@@ -1,11 +1,11 @@
 package resto
 
 import (
-	"app/internal/model"
-	"app/internal/model/constant"
-	"app/internal/repository/menu"
-	"app/internal/repository/order"
-	"app/internal/repository/user"
+	"app/src/model"
+	"app/src/model/constant"
+	"app/src/repository/menu"
+	"app/src/repository/order"
+	"app/src/repository/user"
 	"errors"
 
 	"github.com/google/uuid"

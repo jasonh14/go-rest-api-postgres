@@ -1,7 +1,7 @@
 package user
 
 import (
-	"app/internal/model"
+	"app/src/model"
 	"errors"
 	"time"
 

@@ -1,6 +1,6 @@
 package user
 
-import "app/internal/model"
+import "app/src/model"
 
 type Repository interface {
 	RegisterUser(userData model.User) (model.User, error)

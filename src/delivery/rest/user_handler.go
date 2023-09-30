@@ -33,12 +33,12 @@ func (h *handler) Login(c echo.Context) error {
 	var request model.LoginRequest
 	err := json.NewDecoder(c.Request().Body).Decode(&request)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error(), "test": "test1"})
 	}
 
 	userSession, err := h.restoUseCase.Login(request)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error(), "test": "test"})
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error(), "test": "test2"})
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{

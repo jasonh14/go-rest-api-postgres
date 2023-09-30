@@ -36,11 +36,11 @@ func (ur *userRepo) encrypt(text []byte) string {
 
 	cipherText := ur.gcm.Seal(nonce, nonce, text, nil)
 
-	return base64.StdEncoding.EncodeToString(cipherText)
+	return base64.RawStdEncoding.EncodeToString(cipherText)
 }
 
 func (ur *userRepo) decrypt(cipherText string) ([]byte, error) {
-	decoded, err := base64.StdEncoding.DecodeString(cipherText)
+	decoded, err := base64.RawStdEncoding.DecodeString(cipherText)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (ur *userRepo) comparePassword(hash, password string) (bool, error) {
 			return false, err
 		}
 
-		salt, err := base64.StdEncoding.DecodeString(parts[4])
+		salt, err := base64.RawStdEncoding.DecodeString(parts[4])
 		if err != nil {
 			return false, err
 		}

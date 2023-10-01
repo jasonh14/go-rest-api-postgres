@@ -2,6 +2,8 @@ package user
 
 import (
 	"app/src/model"
+	"app/src/tracing"
+	"context"
 	"errors"
 	"time"
 
@@ -12,7 +14,10 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func (ur *userRepo) generateAccessToken(userID string) (string, error) {
+func (ur *userRepo) generateAccessToken(ctx context.Context, userID string) (string, error) {
+	ctx, span := tracing.CreateSpan(ctx, "generateAccessToken")
+	defer span.End()
+
 	accessClaims := Claims{
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(ur.accessExp).Unix(),
@@ -25,8 +30,11 @@ func (ur *userRepo) generateAccessToken(userID string) (string, error) {
 
 }
 
-func (ur *userRepo) CreateUserSession(userID string) (model.UserSession, error) {
-	accessToken, err := ur.generateAccessToken(userID)
+func (ur *userRepo) CreateUserSession(ctx context.Context, userID string) (model.UserSession, error) {
+	accessToken, err := ur.generateAccessToken(ctx, userID)
+	ctx, span := tracing.CreateSpan(ctx, "CreateUserSession")
+
+	defer span.End()
 	if err != nil {
 		return model.UserSession{}, err
 	}
@@ -36,7 +44,10 @@ func (ur *userRepo) CreateUserSession(userID string) (model.UserSession, error) 
 	}, nil
 }
 
-func (ur *userRepo) CheckSession(data model.UserSession) (userID string, err error) {
+func (ur *userRepo) CheckSession(ctx context.Context, data model.UserSession) (userID string, err error) {
+	ctx, span := tracing.CreateSpan(ctx, "CheckSession")
+	defer span.End()
+
 	accessToken, err := jwt.ParseWithClaims(data.JWTToken, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return &ur.signKey.PublicKey, nil
 	})

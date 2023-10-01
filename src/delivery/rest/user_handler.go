@@ -2,6 +2,7 @@ package rest
 
 import (
 	"app/src/model"
+	"app/src/tracing"
 	"encoding/json"
 	"net/http"
 
@@ -9,6 +10,9 @@ import (
 )
 
 func (h *handler) RegisterUser(c echo.Context) error {
+	ctx, span := tracing.CreateSpan(c.Request().Context(), "RegisterUser")
+	defer span.End()
+
 	var request model.RegisterRequest
 
 	err := json.NewDecoder(c.Request().Body).Decode(&request)
@@ -17,7 +21,7 @@ func (h *handler) RegisterUser(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
 	}
 
-	result, err := h.restoUseCase.RegisterUser(request)
+	result, err := h.restoUseCase.RegisterUser(ctx, request)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
@@ -30,13 +34,16 @@ func (h *handler) RegisterUser(c echo.Context) error {
 }
 
 func (h *handler) Login(c echo.Context) error {
+	ctx, span := tracing.CreateSpan(c.Request().Context(), "Login")
+	defer span.End()
+
 	var request model.LoginRequest
 	err := json.NewDecoder(c.Request().Body).Decode(&request)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error(), "test": "test1"})
 	}
 
-	userSession, err := h.restoUseCase.Login(request)
+	userSession, err := h.restoUseCase.Login(ctx, request)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error(), "test": "test2"})
 	}

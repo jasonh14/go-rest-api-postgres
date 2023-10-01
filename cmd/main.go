@@ -7,6 +7,7 @@ import (
 	mRepo "app/src/repository/menu"
 	oRepo "app/src/repository/order"
 	uRepo "app/src/repository/user"
+	"app/src/tracing"
 	rUseCase "app/src/usecase/resto"
 	"crypto/rand"
 	"crypto/rsa"
@@ -22,6 +23,7 @@ const (
 
 func main() {
 	logger.Init()
+	tracing.Init("http://localhost:14268/api/traces")
 	e := echo.New()
 
 	db := database.GetDB(dbAddress)

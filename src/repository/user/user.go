@@ -2,6 +2,8 @@ package user
 
 import (
 	"app/src/model"
+	"app/src/tracing"
+	"context"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rsa"
@@ -53,17 +55,22 @@ func GetRepository(
 	}, nil
 }
 
-func (ur *userRepo) RegisterUser(userData model.User) (model.User, error) {
-	if err := ur.db.Create(&userData).Error; err != nil {
+func (ur *userRepo) RegisterUser(ctx context.Context, userData model.User) (model.User, error) {
+	ctx, span := tracing.CreateSpan(ctx, "RegisterUser")
+	defer span.End()
+
+	if err := ur.db.WithContext(ctx).Create(&userData).Error; err != nil {
 		return model.User{}, err
 	}
 
 	return userData, nil
 }
 
-func (ur *userRepo) CheckRegistered(username string) (bool, error) {
+func (ur *userRepo) CheckRegistered(ctx context.Context, username string) (bool, error) {
+	ctx, span := tracing.CreateSpan(ctx, "CheckRegistered")
+	defer span.End()
 	var user model.User
-	if err := ur.db.Where(model.User{Username: username}).First(&user).Error; err != nil {
+	if err := ur.db.WithContext(ctx).Where(model.User{Username: username}).First(&user).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return false, nil
 		} else {
@@ -75,12 +82,15 @@ func (ur *userRepo) CheckRegistered(username string) (bool, error) {
 	return user.ID != "", nil
 }
 
-func (ur *userRepo) VerifyLogin(username, password string, userData model.User) (bool, error) {
+func (ur *userRepo) VerifyLogin(ctx context.Context, username, password string, userData model.User) (bool, error) {
+	ctx, span := tracing.CreateSpan(ctx, "VerifyLogin")
+	defer span.End()
+
 	if username != userData.Username {
 		return false, nil
 	}
 
-	verified, err := ur.comparePassword(userData.Hash, password)
+	verified, err := ur.comparePassword(ctx, userData.Hash, password)
 	if err != nil {
 		return false, err
 	}
@@ -89,9 +99,12 @@ func (ur *userRepo) VerifyLogin(username, password string, userData model.User) 
 
 }
 
-func (ur *userRepo) GetUserData(username string) (model.User, error) {
+func (ur *userRepo) GetUserData(ctx context.Context, username string) (model.User, error) {
+	ctx, span := tracing.CreateSpan(ctx, "GetUserData")
+	defer span.End()
+
 	var user model.User
-	if err := ur.db.Where(model.User{Username: username}).First(&user).Error; err != nil {
+	if err := ur.db.WithContext(ctx).Where(model.User{Username: username}).First(&user).Error; err != nil {
 		return model.User{}, err
 	}
 	return user, nil

@@ -2,6 +2,7 @@ package rest
 
 import (
 	"app/src/model/constant"
+	"app/src/tracing"
 	"app/src/usecase/resto"
 	"context"
 	"net/http"
@@ -27,7 +28,11 @@ type authMiddleware struct {
 }
 
 func (am *authMiddleware) CheckAuth(next echo.HandlerFunc) echo.HandlerFunc {
+
 	return func(c echo.Context) error {
+		ctx, span := tracing.CreateSpan(c.Request().Context(), "CheckAuth")
+		defer span.End()
+
 		sessionData, err := GetSessionData(c.Request())
 		if err != nil {
 			return &echo.HTTPError{
@@ -37,7 +42,7 @@ func (am *authMiddleware) CheckAuth(next echo.HandlerFunc) echo.HandlerFunc {
 			}
 		}
 
-		userID, err := am.restoUsecase.CheckSession(sessionData)
+		userID, err := am.restoUsecase.CheckSession(ctx, sessionData)
 		if err != nil {
 			return &echo.HTTPError{
 				Code:     http.StatusUnauthorized,

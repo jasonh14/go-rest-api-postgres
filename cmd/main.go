@@ -3,6 +3,7 @@ package main
 import (
 	"app/src/database"
 	"app/src/delivery/rest"
+	"app/src/logger"
 	mRepo "app/src/repository/menu"
 	oRepo "app/src/repository/order"
 	uRepo "app/src/repository/user"
@@ -14,12 +15,13 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// For Production, put this in env or secure place
 const (
 	dbAddress = "host=localhost port=5432 user=postgres password=postgres dbname=go_resto_app sslmode=disable"
 )
 
 func main() {
-
+	logger.Init()
 	e := echo.New()
 
 	db := database.GetDB(dbAddress)

@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 )
 
 func (h *handler) Order(c echo.Context) error {
@@ -24,6 +25,9 @@ func (h *handler) Order(c echo.Context) error {
 	orderData, err := h.restoUseCase.Order(request)
 
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"err": err,
+		}).Error("[delivery][rest][order_handler][Order] unable to create order")
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
 	}
 
@@ -38,6 +42,9 @@ func (h *handler) GetOrderInfo(c echo.Context) error {
 	orderData, err := h.restoUseCase.GetOrderInfo(model.GetOrderInfoRequest{UserID: userID, OrderID: orderID})
 
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"err": err,
+		}).Error("[delivery][rest][order_handler][GetOrderInfo] unable to get order info")
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
 	}
 
